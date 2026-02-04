@@ -1,0 +1,9 @@
+{
+  "name": "VIDYASETU",
+  "description": "A comprehensive, AI-powered school management system featuring RAG-based assistance, smart attendance, and role-based portals.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
