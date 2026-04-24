@@ -1,20 +1,57 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+✨ Features
+- 👩‍🎓 Student Management: Admissions, attendance, grades, performance tracking
+- 👨‍🏫 Teacher Management: Class schedules, subject allocation, performance monitoring
+- 👪 Parent Portal: Real-time updates on student progress and communication
+- 📚 Academic Management: Timetable generation, exam scheduling, results publishing
+- 💰 Finance Management: Online fee collection, receipts, financial reporting
+- 📖 Library Management: Book catalog, issue/return tracking, fines
+- 🚌 Transport Management: Bus routes, driver details, student allocation
+- 📢 Communication: Notifications, announcements, messaging system
+- 📊 Reports & Analytics: Custom dashboards and detailed report
 
-# Run and deploy your AI Studio app
+🛠️ Tech Stack
+- Frontend: React.js / Angular
+- Backend: Node.js / Django / Spring Boot
+- Database: MySQL / PostgreSQL / MongoDB
+- Authentication: JWT / OAuth2
+- Deployment: Docker, Kubernetes
+- Version Control: Git & GitHub
 
-This contains everything you need to run your app locally.
+📂 Project Structure
+VIDYASETU-School-Management/
+│── docs/                # Documentation
+│── frontend/            # React/Angular frontend code
+│── backend/             # Node.js/Django backend code
+│── database/            # Database schema & migrations
+│── config/              # Configuration files
+│── tests/               # Unit & integration tests
+│── scripts/             # Utility scripts
+│── README.md            # Project documentation
 
-View your app in AI Studio: https://ai.studio/apps/drive/13-aYiXsDJd1u3A4Vtp0tgdf4JwZ7xipB
+# Clone the repository
+git clone https://github.com/yourusername/VIDYASETU-School-Management.git
+cd VIDYASETU-School-Management
 
-## Run Locally
+# Backend setup
+cd backend
+npm install   # or pip install -r requirements.txt
 
-**Prerequisites:**  Node.js
+# Configure environment variables
+cp .env.example .env
+# Edit .env with DB credentials and secrets
+
+# Run migrations
+npm run migrate   # or python manage.py migrate
+
+# Start backend
+npm start   # or python manage.py runserver
+
+# Frontend setup
+cd ../frontend
+npm install
+npm start
 
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+
+
