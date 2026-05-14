@@ -312,7 +312,6 @@ const AuthPage: React.FC<{ onLogin: (user: User) => void, onBack: () => void }> 
                 </div>
                </>
              )}
-             
              <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5 ml-1">Email ID</label>
                 <div className="relative">
@@ -387,7 +386,6 @@ const AuthPage: React.FC<{ onLogin: (user: User) => void, onBack: () => void }> 
 };
 
 const UserRoleIcon = (props: any) => <Users {...props} />;
-
 // --- Main App (Dashboard) ---
 interface DashboardProps {
   user: User;
@@ -395,11 +393,9 @@ interface DashboardProps {
   classes: ClassSession[];
   setClasses: React.Dispatch<React.SetStateAction<ClassSession[]>>;
 }
-
 const DashboardApp: React.FC<DashboardProps> = ({ user, onLogout, classes, setClasses }) => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-
   // Navigation config with Role-based Access Control
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT, UserRole.PARENT] },
