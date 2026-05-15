@@ -16,8 +16,6 @@ npm install
 GEMINI_API_KEY=your_api_key_here
 - Start the development server
 npm run dev
-- Open your browser and navigate to:
-http://localhost:3000
 🌐 Deployment
 To deploy your app, you can use any Node.js‑compatible hosting service (e.g., Vercel, Netlify, or Render).
 Example: Deploy on Vercel
