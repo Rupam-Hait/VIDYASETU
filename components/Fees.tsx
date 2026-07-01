@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, CheckCircle, AlertCircle, DollarSign, Calendar, Plus, Save, Wallet, IndianRupee, X, Smartphone, Landmark, Briefcase, TrendingUp } from 'lucide-react';
 import { User, UserRole } from '../types';
+import { API_BASE } from '../services/apiConfig';
 
 export const Fees: React.FC<{ user: User }> = ({ user }) => {
   // State for Student Fees
@@ -11,7 +12,7 @@ export const Fees: React.FC<{ user: User }> = ({ user }) => {
     const loadFees = async () => {
       try {
         const token = localStorage.getItem('vidyasetu_token');
-        const res = await fetch('/api/fees', {
+        const res = await fetch(`${API_BASE}/api/fees`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -64,7 +65,7 @@ export const Fees: React.FC<{ user: User }> = ({ user }) => {
     setProcessing(true);
     try {
       const token = localStorage.getItem('vidyasetu_token');
-      const res = await fetch('/api/fees/pay', {
+      const res = await fetch(`${API_BASE}/api/fees/pay`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,14 +113,14 @@ export const Fees: React.FC<{ user: User }> = ({ user }) => {
              if (selectedFeeId) {
                  try {
                    const token = localStorage.getItem('vidyasetu_token');
-                   const res = await fetch('/api/fees/pay', {
-                     method: 'POST',
-                     headers: {
-                       'Content-Type': 'application/json',
-                       'Authorization': `Bearer ${token}`
-                     },
-                     body: JSON.stringify({ feeId: selectedFeeId, method: 'UPI' })
-                   });
+                    const res = await fetch(`${API_BASE}/api/fees/pay`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({ feeId: selectedFeeId, method: 'UPI' })
+                    });
                    if (res.ok) {
                      const data = await res.json();
                      setFees(prev => prev.map(f => f.id === selectedFeeId ? { ...f, status: 'PAID', date: data.date, invoice: data.invoice } : f));

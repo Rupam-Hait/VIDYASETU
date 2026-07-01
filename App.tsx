@@ -34,6 +34,7 @@ import { BusTracker } from './components/BusTracker';
 import { User, UserRole, ClassSession } from './types';
 import { DEMO_USERS, MOCK_NOTICES, MOCK_CLASSES } from './constants';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { API_BASE } from './services/apiConfig';
 
 // --- View State Management ---
 type ViewState = 'landing' | 'login' | 'app';
@@ -210,7 +211,7 @@ const AuthPage: React.FC<{ onLogin: (user: User) => void, onBack: () => void }> 
     try {
       if (isLogin) {
         // --- LOGIN LOGIC ---
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -223,7 +224,7 @@ const AuthPage: React.FC<{ onLogin: (user: User) => void, onBack: () => void }> 
         onLogin(data.user);
       } else {
         // --- SIGNUP LOGIC ---
-        const res = await fetch('/api/auth/register', {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password, role, className: '10-A' })
@@ -397,7 +398,7 @@ const DashboardApp: React.FC<DashboardProps> = ({ user, onLogout, classes, setCl
       setLoadingNotices(true);
       try {
         const token = localStorage.getItem('vidyasetu_token');
-        const res = await fetch('/api/notices', {
+        const res = await fetch(`${API_BASE}/api/notices`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -707,7 +708,7 @@ export default function App() {
         return;
       }
       try {
-        const res = await fetch('/api/auth/me', {
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {

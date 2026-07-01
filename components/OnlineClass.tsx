@@ -6,6 +6,7 @@ import {
   MousePointer2, Type
 } from 'lucide-react';
 import { User, UserRole, ClassSession } from '../types';
+import { API_BASE } from '../services/apiConfig';
 
 interface OnlineClassProps {
   user: User;
@@ -292,7 +293,7 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
     const loadClasses = async () => {
       try {
         const token = localStorage.getItem('vidyasetu_token');
-        const res = await fetch('/api/classes', {
+        const res = await fetch(`${API_BASE}/api/classes`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -310,7 +311,7 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
     e.preventDefault();
     try {
       const token = localStorage.getItem('vidyasetu_token');
-      const res = await fetch('/api/classes', {
+      const res = await fetch(`${API_BASE}/api/classes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -352,7 +353,7 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
         const sessionId = currentSession.id;
         try {
           const token = localStorage.getItem('vidyasetu_token');
-          await fetch(`/api/classes/${sessionId}`, {
+          await fetch(`${API_BASE}/api/classes/${sessionId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -385,7 +386,7 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
         if (window.confirm("Do you want to end the class session?")) {
             try {
               const token = localStorage.getItem('vidyasetu_token');
-              await fetch(`/api/classes/${sessionId}`, {
+              await fetch(`${API_BASE}/api/classes/${sessionId}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Filter, ExternalLink, QrCode, X, Search, GraduationCap, Atom } from 'lucide-react';
+import { API_BASE } from '../services/apiConfig';
 
 interface Book {
   id: string;
@@ -68,7 +69,7 @@ export const Library: React.FC = () => {
       setLoading(false);
       try {
         const token = localStorage.getItem('vidyasetu_token');
-        const res = await fetch('/api/library', {
+        const res = await fetch(`${API_BASE}/api/library`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {

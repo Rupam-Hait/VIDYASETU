@@ -1,4 +1,5 @@
 import { QuizQuestion } from "../types";
+import { API_BASE } from "./apiConfig";
 
 const getHeaders = () => {
   const token = localStorage.getItem('vidyasetu_token');
@@ -10,7 +11,7 @@ const getHeaders = () => {
 
 export const generateRAGResponse = async (userQuery: string, role: string): Promise<string> => {
   try {
-    const res = await fetch('/api/gemini/chat', {
+    const res = await fetch(`${API_BASE}/api/gemini/chat`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ message: userQuery, role })
@@ -31,7 +32,7 @@ export const generateRAGResponse = async (userQuery: string, role: string): Prom
  */
 export const generateQuizQuestions = async (topic: string): Promise<QuizQuestion[]> => {
   try {
-    const res = await fetch('/api/gemini/quiz', {
+    const res = await fetch(`${API_BASE}/api/gemini/quiz`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ topic })
@@ -52,7 +53,7 @@ export const generateQuizQuestions = async (topic: string): Promise<QuizQuestion
  */
 export const compressStudyMaterial = async (base64Data: string, mimeType: string): Promise<string> => {
   try {
-    const res = await fetch('/api/gemini/compress', {
+    const res = await fetch(`${API_BASE}/api/gemini/compress`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ base64: base64Data, mimeType })

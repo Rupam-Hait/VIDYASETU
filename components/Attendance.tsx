@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, CheckCircle, AlertTriangle, ScanFace, Calendar, Clock, UserCheck } from 'lucide-react';
+import { API_BASE } from '../services/apiConfig';
 
 interface AttendanceLog {
   id: number;
@@ -33,7 +34,7 @@ export const Attendance: React.FC = () => {
     setLoadingHistory(true);
     try {
       const token = localStorage.getItem('vidyasetu_token');
-      const res = await fetch('/api/attendance/history', {
+      const res = await fetch(`${API_BASE}/api/attendance/history`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -82,7 +83,7 @@ export const Attendance: React.FC = () => {
     setTimeout(async () => {
       try {
         const token = localStorage.getItem('vidyasetu_token');
-        const res = await fetch('/api/attendance/mark', {
+        const res = await fetch(`${API_BASE}/api/attendance/mark`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
