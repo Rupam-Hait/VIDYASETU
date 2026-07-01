@@ -13,7 +13,7 @@
 
 *A school management platform that thinks a little, so everyone else can focus on teaching and learning.*
 
-**[→ Try the live demo](https://vidyasetu-school-management.vercel.app)** &nbsp;|&nbsp; **[Report a bug](https://github.com/Rupam-Hait/VIDYASETU/issues)** &nbsp;|&nbsp; **[Suggest a feature](https://github.com/Rupam-Hait/VIDYASETU/issues)**
+**[→ Try the live demo](https://vidyasetu-mkwk.vercel.app/)** &nbsp;|&nbsp; **[Report a bug](https://github.com/Rupam-Hait/VIDYASETU/issues)** &nbsp;|&nbsp; **[Suggest a feature](https://github.com/Rupam-Hait/VIDYASETU/issues)**
 
 </div>
 
@@ -145,7 +145,7 @@ vercel
 
 Just remember to set `GEMINI_API_KEY` in your host's environment variables — the AI tutor is quiet without it.
 
-A working build is already live at **[vidyasetu-school-management.vercel.app](https://vidyasetu-school-management.vercel.app)**.
+A working build is already live at **[vidyasetu-mkwk.vercel.app](https://vidyasetu-mkwk.vercel.app/)**.
 
 <br>
 
