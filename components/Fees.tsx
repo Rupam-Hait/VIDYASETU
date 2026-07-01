@@ -1,38 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, CheckCircle, AlertCircle, DollarSign, Calendar, Plus, Save, Wallet, IndianRupee, X, Smartphone, Landmark, Briefcase, TrendingUp } from 'lucide-react';
 import { User, UserRole } from '../types';
 
 export const Fees: React.FC<{ user: User }> = ({ user }) => {
-  // Mock State for Student Fees (12 Months)
-  const [fees, setFees] = useState([
-    { id: 1, month: 'January 2024', amount: 3500, status: 'PAID', date: '2024-01-10', invoice: 'INV-001' },
-    { id: 2, month: 'February 2024', amount: 3500, status: 'PAID', date: '2024-02-11', invoice: 'INV-002' },
-    { id: 3, month: 'March 2024', amount: 3500, status: 'PAID', date: '2024-03-10', invoice: 'INV-003' },
-    { id: 4, month: 'April 2024', amount: 3500, status: 'PAID', date: '2024-04-12', invoice: 'INV-004' },
-    { id: 5, month: 'May 2024', amount: 3500, status: 'PAID', date: '2024-05-10', invoice: 'INV-005' },
-    { id: 6, month: 'June 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 7, month: 'July 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 8, month: 'August 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 9, month: 'September 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 10, month: 'October 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 11, month: 'November 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-    { id: 12, month: 'December 2024', amount: 3500, status: 'PENDING', date: '-', invoice: '-' },
-  ]);
+  // State for Student Fees
+  const [fees, setFees] = useState<any[]>([]);
+
+  // Fetch student fees from database on mount
+  useEffect(() => {
+    const loadFees = async () => {
+      try {
+        const token = localStorage.getItem('vidyasetu_token');
+        const res = await fetch('/api/fees', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result.type === 'fees') {
+            setFees(result.data);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading financial records:', err);
+      }
+    };
+
+    if (user.role === 'STUDENT' || user.role === 'PARENT') {
+      loadFees();
+    }
+  }, [user]);
 
   // Mock State for Teacher Salary (12 Months)
   const [salaries] = useState([
-    { id: 1, month: 'January 2024', amount: 45000, status: 'CREDITED', date: '2024-01-31', ref: 'SAL-001' },
-    { id: 2, month: 'February 2024', amount: 45000, status: 'CREDITED', date: '2024-02-29', ref: 'SAL-002' },
-    { id: 3, month: 'March 2024', amount: 45000, status: 'CREDITED', date: '2024-03-31', ref: 'SAL-003' },
-    { id: 4, month: 'April 2024', amount: 45000, status: 'CREDITED', date: '2024-04-30', ref: 'SAL-004' },
-    { id: 5, month: 'May 2024', amount: 45000, status: 'CREDITED', date: '2024-05-31', ref: 'SAL-005' },
-    { id: 6, month: 'June 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 7, month: 'July 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 8, month: 'August 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 9, month: 'September 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 10, month: 'October 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 11, month: 'November 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
-    { id: 12, month: 'December 2024', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 1, month: 'January 2026', amount: 45000, status: 'CREDITED', date: '2026-01-31', ref: 'SAL-001' },
+    { id: 2, month: 'February 2026', amount: 45000, status: 'CREDITED', date: '2026-02-29', ref: 'SAL-002' },
+    { id: 3, month: 'March 2026', amount: 45000, status: 'CREDITED', date: '2026-03-31', ref: 'SAL-003' },
+    { id: 4, month: 'April 2026', amount: 45000, status: 'CREDITED', date: '2026-04-30', ref: 'SAL-004' },
+    { id: 5, month: 'May 2026', amount: 45000, status: 'CREDITED', date: '2026-05-31', ref: 'SAL-005' },
+    { id: 6, month: 'June 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 7, month: 'July 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 8, month: 'August 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 9, month: 'September 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 10, month: 'October 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 11, month: 'November 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
+    { id: 12, month: 'December 2026', amount: 45000, status: 'SCHEDULED', date: '-', ref: '-' },
   ]);
 
   // Mock State for Admin
@@ -49,17 +60,32 @@ export const Fees: React.FC<{ user: User }> = ({ user }) => {
     setPaymentMethod('CARD');
   };
 
-  const processPayment = () => {
+  const processPayment = async () => {
     setProcessing(true);
-    // Simulate Payment Gateway delay
-    setTimeout(() => {
-        if (selectedFeeId) {
-             setFees(prev => prev.map(f => f.id === selectedFeeId ? { ...f, status: 'PAID', date: new Date().toLocaleDateString(), invoice: `INV-00${4 + Math.floor(Math.random() * 100)}` } : f));
-        }
-        setProcessing(false);
-        setSelectedFeeId(null);
+    try {
+      const token = localStorage.getItem('vidyasetu_token');
+      const res = await fetch('/api/fees/pay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ feeId: selectedFeeId, method: 'CARD' })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFees(prev => prev.map(f => f.id === selectedFeeId ? { ...f, status: 'PAID', date: data.date, invoice: data.invoice } : f));
         alert("Payment Successful! Receipt generated.");
-    }, 2000);
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to record payment');
+      }
+    } catch (err) {
+      console.error('Payment API error:', err);
+    } finally {
+      setProcessing(false);
+      setSelectedFeeId(null);
+    }
   };
 
   const handleGooglePay = () => {
@@ -82,13 +108,32 @@ export const Fees: React.FC<{ user: User }> = ({ user }) => {
         document.body.removeChild(link);
         
         setProcessing(true);
-        setTimeout(() => {
+        setTimeout(async () => {
              if (selectedFeeId) {
-                 setFees(prev => prev.map(f => f.id === selectedFeeId ? { ...f, status: 'PAID', date: new Date().toLocaleDateString(), invoice: `INV-GP-${Math.floor(Math.random() * 1000)}` } : f));
-            }
-            setProcessing(false);
-            setSelectedFeeId(null);
-            alert("Payment Verified via UPI");
+                 try {
+                   const token = localStorage.getItem('vidyasetu_token');
+                   const res = await fetch('/api/fees/pay', {
+                     method: 'POST',
+                     headers: {
+                       'Content-Type': 'application/json',
+                       'Authorization': `Bearer ${token}`
+                     },
+                     body: JSON.stringify({ feeId: selectedFeeId, method: 'UPI' })
+                   });
+                   if (res.ok) {
+                     const data = await res.json();
+                     setFees(prev => prev.map(f => f.id === selectedFeeId ? { ...f, status: 'PAID', date: data.date, invoice: data.invoice } : f));
+                     alert("Payment Verified via UPI");
+                   } else {
+                     const data = await res.json();
+                     alert(data.error || 'Failed to record UPI payment');
+                   }
+                 } catch (err) {
+                   console.error('UPI payment API error:', err);
+                 }
+             }
+             setProcessing(false);
+             setSelectedFeeId(null);
         }, 5000);
     }
   };

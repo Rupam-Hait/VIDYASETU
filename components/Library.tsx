@@ -60,8 +60,31 @@ export const Library: React.FC = () => {
   const [filterSubject, setFilterSubject] = useState<'ALL' | 'Science' | 'Mathematics'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQr, setSelectedQr] = useState<Book | null>(null);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredBooks = BOOKS.filter(book => {
+  useEffect(() => {
+    const loadBooks = async () => {
+      setLoading(false);
+      try {
+        const token = localStorage.getItem('vidyasetu_token');
+        const res = await fetch('/api/library', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setBooks(data);
+        }
+      } catch (err) {
+        console.error('Error fetching library books:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadBooks();
+  }, []);
+
+  const filteredBooks = books.filter(book => {
     const matchesBoard = filterBoard === 'ALL' || book.board === filterBoard;
     const matchesSubject = filterSubject === 'ALL' || book.subject === filterSubject;
     const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -77,7 +100,7 @@ export const Library: React.FC = () => {
           <h2 className="text-3xl font-bold text-white flex items-center gap-3">
             <BookOpen className="text-cyan-400 w-8 h-8" /> Digital Library
           </h2>
-          <p className="text-slate-400 mt-1">Access {BOOKS.length}+ curriculum books instantly.</p>
+          <p className="text-slate-400 mt-1">Access {books.length}+ curriculum books instantly.</p>
         </div>
         
         <div className="flex gap-2">

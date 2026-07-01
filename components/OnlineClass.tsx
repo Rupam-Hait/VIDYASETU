@@ -288,23 +288,48 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
     return () => stopMediaStream();
   }, []);
 
-  const handleScheduleClass = (e: React.FormEvent) => {
-    e.preventDefault();
-    const session: ClassSession = {
-      id: Date.now().toString(),
-      title: newClass.title,
-      subject: newClass.subject,
-      teacherId: user.id,
-      teacherName: user.name,
-      date: newClass.date,
-      startTime: newClass.time,
-      duration: 60,
-      status: 'scheduled',
-      attendees: 0
+  useEffect(() => {
+    const loadClasses = async () => {
+      try {
+        const token = localStorage.getItem('vidyasetu_token');
+        const res = await fetch('/api/classes', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setClasses(data);
+        }
+      } catch (err) {
+        console.error('Error loading classes:', err);
+      }
     };
-    setClasses(prev => [...prev, session]);
-    setShowScheduleForm(false);
-    setNewClass({ title: '', subject: '', date: '', time: '' });
+    loadClasses();
+  }, [view, setClasses]);
+
+  const handleScheduleClass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('vidyasetu_token');
+      const res = await fetch('/api/classes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newClass)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setClasses(prev => [data, ...prev]);
+        setShowScheduleForm(false);
+        setNewClass({ title: '', subject: '', date: '', time: '' });
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to schedule class');
+      }
+    } catch (err) {
+      console.error('Error scheduling class:', err);
+    }
   };
 
   const handleJoinClick = (session: ClassSession) => {
@@ -322,15 +347,28 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
     setView('lobby');
   };
 
-  const enterClassroom = () => {
+  const enterClassroom = async () => {
     if (currentSession && user.role === UserRole.TEACHER) {
         const sessionId = currentSession.id;
-        setClasses(prev => prev.map(c => c.id === sessionId ? { ...c, status: 'live' } : c));
+        try {
+          const token = localStorage.getItem('vidyasetu_token');
+          await fetch(`/api/classes/${sessionId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: 'live', attendees: Math.floor(Math.random() * 15) + 5 })
+          });
+          setClasses(prev => prev.map(c => c.id === sessionId ? { ...c, status: 'live' } : c));
+        } catch (err) {
+          console.error('Error starting class:', err);
+        }
     }
     setView('room');
   };
 
-  const leaveClassroom = (e?: React.MouseEvent) => {
+  const leaveClassroom = async (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -345,7 +383,20 @@ export const OnlineClass: React.FC<OnlineClassProps> = ({ user, classes, setClas
 
     if (user.role === UserRole.TEACHER) {
         if (window.confirm("Do you want to end the class session?")) {
-            setClasses(prev => prev.map(c => c.id === sessionId ? { ...c, status: 'ended' } : c));
+            try {
+              const token = localStorage.getItem('vidyasetu_token');
+              await fetch(`/api/classes/${sessionId}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: 'ended' })
+              });
+              setClasses(prev => prev.map(c => c.id === sessionId ? { ...c, status: 'ended' } : c));
+            } catch (err) {
+              console.error('Error ending class:', err);
+            }
             stopMediaStream();
             setView('dashboard');
             setCurrentSession(null);

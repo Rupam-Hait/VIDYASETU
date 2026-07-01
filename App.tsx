@@ -202,51 +202,44 @@ const AuthPage: React.FC<{ onLogin: (user: User) => void, onBack: () => void }> 
     setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
-      // 1. Get stored users from localStorage
-      const storedUsers = JSON.parse(localStorage.getItem('vidyasetu_users') || '[]');
-      // 2. Combine with Demo users for Login check
-      const allUsers = [...DEMO_USERS, ...storedUsers];
-
+    try {
       if (isLogin) {
         // --- LOGIN LOGIC ---
-        const user = allUsers.find(u => u.id === email && u.password === password);
-        
-        if (user) {
-          onLogin({ id: user.id, name: user.name, role: user.role, class: user.class });
-        } else {
-          setError('Invalid Credentials. Please check your email and password.');
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Invalid Credentials');
         }
+        localStorage.setItem('vidyasetu_token', data.token);
+        onLogin(data.user);
       } else {
         // --- SIGNUP LOGIC ---
-        // Check if user already exists
-        if (allUsers.find(u => u.id === email)) {
-            setError('User already exists with this email ID.');
-            setLoading(false);
-            return;
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role, className: '10-A' })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Signup failed');
         }
-
-        const newUser = {
-            id: email, // Use email as ID
-            name: name,
-            role: role,
-            password: password,
-            class: '10-A' // Default class for demo
-        };
-
-        // Save to localStorage
-        localStorage.setItem('vidyasetu_users', JSON.stringify([...storedUsers, newUser]));
-        
-        // Auto-login
-        onLogin(newUser);
+        localStorage.setItem('vidyasetu_token', data.token);
+        onLogin(data.user);
       }
+    } catch (err: any) {
+      setError(err.message || 'Server error. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -396,6 +389,29 @@ interface DashboardProps {
 const DashboardApp: React.FC<DashboardProps> = ({ user, onLogout, classes, setClasses }) => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [notices, setNotices] = useState<any[]>([]);
+  const [loadingNotices, setLoadingNotices] = useState(false);
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      setLoadingNotices(true);
+      try {
+        const token = localStorage.getItem('vidyasetu_token');
+        const res = await fetch('/api/notices', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setNotices(data);
+        }
+      } catch (err) {
+        console.error('Error fetching notices:', err);
+      } finally {
+        setLoadingNotices(false);
+      }
+    };
+    fetchNotices();
+  }, [currentView]);
   // Navigation config with Role-based Access Control
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT, UserRole.PARENT] },
@@ -520,16 +536,22 @@ const DashboardApp: React.FC<DashboardProps> = ({ user, onLogout, classes, setCl
               <div className="glass-panel p-6 rounded-2xl">
                 <h3 className="text-lg font-bold text-white mb-4">Notices & Announcements</h3>
                 <div className="space-y-4">
-                  {MOCK_NOTICES.map(notice => (
-                    <div key={notice.id} className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-cyan-500/50 transition">
-                      <div className="flex justify-between items-start mb-1">
-                        <h4 className="font-semibold text-cyan-100">{notice.title}</h4>
-                        <span className="text-xs bg-cyan-900/50 text-cyan-300 px-2 py-1 rounded">{notice.type}</span>
+                  {loadingNotices ? (
+                    <div className="text-center py-4 text-cyan-400">Loading notices...</div>
+                  ) : notices.length === 0 ? (
+                    <div className="text-center py-4 text-slate-500 text-sm">No notices posted.</div>
+                  ) : (
+                    notices.map(notice => (
+                      <div key={notice.id} className="p-4 bg-slate-800/50 rounded-xl border border-slate-700 hover:border-cyan-500/50 transition">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-semibold text-cyan-100">{notice.title}</h4>
+                          <span className="text-xs bg-cyan-900/50 text-cyan-300 px-2 py-1 rounded">{notice.type}</span>
+                        </div>
+                        <p className="text-sm text-slate-400">{notice.content}</p>
+                        <p className="text-xs text-slate-500 mt-2">{notice.date}</p>
                       </div>
-                      <p className="text-sm text-slate-400">{notice.content}</p>
-                      <p className="text-xs text-slate-500 mt-2">{notice.date}</p>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -675,6 +697,34 @@ export default function App() {
   const [viewState, setViewState] = useState<ViewState>('landing');
   // Lifted state for Classes to persist schedule across user sessions for demo
   const [classes, setClasses] = useState<ClassSession[]>(MOCK_CLASSES);
+  const [loadingSession, setLoadingSession] = useState(true);
+
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = localStorage.getItem('vidyasetu_token');
+      if (!token) {
+        setLoadingSession(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+          setViewState('app');
+        } else {
+          localStorage.removeItem('vidyasetu_token');
+        }
+      } catch (err) {
+        console.error('Session verify error:', err);
+      } finally {
+        setLoadingSession(false);
+      }
+    };
+    verifySession();
+  }, []);
 
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -682,9 +732,21 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('vidyasetu_token');
     setUser(null);
     setViewState('landing');
   };
+
+  if (loadingSession) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-cyan-400 text-sm font-bold tracking-wider animate-pulse">CONNECTING TO VIDYASETU...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
